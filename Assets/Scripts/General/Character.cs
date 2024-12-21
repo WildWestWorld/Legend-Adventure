@@ -5,25 +5,25 @@ using UnityEngine.Events;
 
 public class Character : MonoBehaviour
 {
-    [Header("»ù±¾ÊôĞÔ")]
-    //×î´óÉúÃüÖµ
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
     public float maxHealth;
-    //µ±Ç°ÉúÃüÖµ
+    //ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Öµ
     public float currentHealth;
 
 
-    [Header("ÊÜÉËÎŞµĞ")]
-    //ÎŞµĞÊ±¼ä
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½Şµï¿½")]
+    //ï¿½Şµï¿½Ê±ï¿½ï¿½
     public float invulnerableDuration;
-    //ÎŞµĞÊ±¼äµ¹¼ÆÊ±
-    private float invulnerableCounter;
-    //ÊÇ·ñÊÜÉË
+    //ï¿½Şµï¿½Ê±ï¿½äµ¹ï¿½ï¿½Ê±
+    public float invulnerableCounter;
+    //ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½
     public bool invulnerable;
 
-    //ÊÕµ½ÉËº¦ºóÊÂ¼şµÄ¼¯ºÏ
+    //ï¿½Õµï¿½ï¿½Ëºï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½
     public UnityEvent<Transform> onTakeDamage;
 
-    //ÈËÎïËÀÍöµÄ×´Ì¬
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
     public UnityEvent onDie;
 
     // Start is called before the first frame update
@@ -34,7 +34,7 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
-        //Èç¹ûÊÇÊÜÉË×´Ì¬
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
         if (invulnerable)
         {
             invulnerableCounter = invulnerableCounter - Time.deltaTime;
@@ -54,7 +54,7 @@ public class Character : MonoBehaviour
         if (invulnerable)
             return;
 
-        // ±ÜÃâÖØ¸´´¥·¢ÉËº¦
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëºï¿½
         if (currentHealth <= 0)
             return;
 
@@ -62,13 +62,13 @@ public class Character : MonoBehaviour
         {
             currentHealth -= attacker.damage;
             TriggerInvulnerable();
-            //Ö´ĞĞÊÜÉË
+            //Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             onTakeDamage?.Invoke(attacker.transform);
         }
         else
         {
             currentHealth = 0;
-            // ´¥·¢ËÀÍö
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             onDie?.Invoke();
         }
 
@@ -76,7 +76,7 @@ public class Character : MonoBehaviour
     }
 
 
-    //´¥·¢
+    //ï¿½ï¿½ï¿½ï¿½
     private void TriggerInvulnerable()
     {
 

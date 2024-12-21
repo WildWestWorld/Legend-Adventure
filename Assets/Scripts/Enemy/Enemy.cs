@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(PhysicsCheck))]
 public class Enemy : MonoBehaviour
 {
-    private Rigidbody2D rb;
+    [HideInInspector] public Rigidbody2D rb;
 
     // HideInInspector 可以隐藏该变量在 Unity Inspector 中显示，但仍然是 public 的
     [HideInInspector] public Animator anim;
@@ -18,9 +18,12 @@ public class Enemy : MonoBehaviour
     public Vector3 faceDir; // 敌人面朝的方向（用于移动和攻击）
 
     public Transform attacker; // 记录攻击者的引用（用于受伤处理）
-
+    
+    
     public float hurtForce; // 受伤时的击退力
 
+    public Vector3 spawnPoint; //怪物初始的生成位置
+    
     [Header("检测设置")]
     // 中心偏移量，用于计算检测区域的位置
     public Vector2 centerOffset;
@@ -50,6 +53,7 @@ public class Enemy : MonoBehaviour
     private BaseState currentState;
     protected BaseState patrolState;
     protected BaseState chaseState;
+    protected BaseState skillState;
 
     protected virtual void Awake()
     {
@@ -59,6 +63,8 @@ public class Enemy : MonoBehaviour
 
         currentSpeed = normalSpeed;
         waitTimeCounter = waitTime;
+        
+        spawnPoint = transform.position;
     }
 
     private void OnEnable()
@@ -80,6 +86,7 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
+        currentState.PhysicsUpdate();
         // 只有在没有受伤、没有死亡、且没有在等待时才进行移动
         if (!isHurt && !isDead && !wait)
         {
@@ -94,8 +101,14 @@ public class Enemy : MonoBehaviour
 
     public virtual void Move()
     {
-        // 根据当前速度和面朝方向来移动敌人
-        rb.velocity = new Vector2(currentSpeed * faceDir.x * Time.deltaTime, rb.velocity.y);
+        //如果没有在执行动画PreMove 就执行移动
+        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("PreMove")&&!anim.GetCurrentAnimatorStateInfo(0).IsName("Recover"))
+        {
+            // 根据当前速度和面朝方向来移动敌人
+            rb.velocity = new Vector2(currentSpeed * faceDir.x * Time.deltaTime, rb.velocity.y);
+        }
+
+        
     }
 
     private void CheckTurn()
@@ -140,7 +153,7 @@ public class Enemy : MonoBehaviour
     }
 
     // 检测玩家是否在敌人的视野范围内
-    public bool FoundPlayer()
+    public virtual bool FoundPlayer()
     {
         return Physics2D.BoxCast(transform.position + (Vector3)centerOffset, checkSize, 0, faceDir, checkDistance,
             attackLayer);
@@ -153,6 +166,7 @@ public class Enemy : MonoBehaviour
         {
             NPCState.Patrol => patrolState,
             NPCState.Chase => chaseState,
+            NPCState.Skill => skillState,
             _ => null
         };
         currentState.OnExit(); // 退出当前状态
@@ -160,6 +174,13 @@ public class Enemy : MonoBehaviour
         currentState.OnEnter(this); // 进入新状态
     }
 
+    public virtual Vector3 GetNewPoint()
+    {
+
+        return transform.position;
+    }
+    
+    
     #region 伤害处理
 
     // 处理敌人受到攻击
@@ -198,7 +219,7 @@ public class Enemy : MonoBehaviour
     }
 
     // 处理敌人死亡
-    public void onDie()
+    public void OnDie()
     {
         // 将敌人设置为 "死亡" 图层（可以用于视觉效果或碰撞处理）
         gameObject.layer = 2;
